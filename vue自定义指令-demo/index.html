@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html >
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <div v-touchstart="father">
+                <div v-touchstart.once="son">ceshi</div>
+        </div>
+    </div>
+</body>
+<script src="./vue.js"></script>
+</html>
+<script>
+    Vue.directive('touchstart',{
+        bind(element,binding,vnode){
+            // console.log(element,binding,vnode)
+            // binding.value()
+            const {stop,prevent,capture,self,once} = binding.modifiers
+
+            function fn(event){
+                
+                if(stop){
+                    event.stopPropagation();
+                }
+                
+                if(prevent){
+                    event.preventDefault();
+                }
+   
+                if(self){
+                    if(event.target !== element){
+                        return
+                    }
+                }
+
+                if(once){ // 确保修饰符存在
+                    
+                    if(!fn.once){
+                        return
+                    }
+                    fn.once = false;
+                }
+
+                binding.value()
+
+            }
+            fn.once = true;
+
+            element.addEventListener('touchstart',fn,{capture})
+        }
+    })
+
+    new Vue({
+        el:'#app',
+        data(){
+            return {
+
+            }
+        },
+        methods:{
+            son(){
+                console.log('son')
+            },
+            father(){
+                console.log('father')
+            }
+        }
+    })
+</script>
